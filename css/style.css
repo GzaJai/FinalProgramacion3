@@ -1079,4 +1079,8 @@ a:focus {
 .footer_section .footer-info p a {
   color: inherit;
 }
+
+a {
+  cursor: pointer;
+}
 /*# sourceMappingURL=style.css.map */
