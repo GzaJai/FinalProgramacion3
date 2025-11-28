@@ -35,7 +35,7 @@
 
   <div class="hero_area">
     <!-- header section strats -->
-<header class="header_section">
+    <header class="header_section">
       <div class="container-fluid">
         <nav class="navbar navbar-expand-lg custom_nav-container ">
           <a class="navbar-brand" href="index.html">
@@ -67,7 +67,7 @@
               <a href="">
                 <i class="fa fa-user" aria-hidden="true"></i>
               </a>
-              <a href="shopping-cart.html">
+              <a href="">
                 <i class="fa fa-cart-plus" aria-hidden="true"></i>
               </a>
               <a href="">
@@ -124,8 +124,7 @@
         <h2>Modelos disponibles</h2>
       </div>
 
-      <div class="row" id="products-container">
-        <!-- Los productos se cargan aquí dinámicamente -->
+      <div class="row" style="display: flex; align-items: center; justify-content: center;" id="products-container">
       </div>
 
       <div class="btn-box">
@@ -438,12 +437,12 @@
         const container = document.getElementById("products-container");
         container.innerHTML = "";
 
-        const firstThree = products.slice(0, 4);
+        const firstThree = products.slice(0, 3);
 
         firstThree.forEach(p => {
 
           const productHTML = `
-            <div class="col-md-6">
+            <div class="col-md-3">
               <div class="box">
                 <a href="product-detail.html?id=${p.id_key}">
                   <div class="img-box">
