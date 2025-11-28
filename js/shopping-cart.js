@@ -1,4 +1,4 @@
-const getCart = () => {
+export const getCart = () => {
     return JSON.parse(localStorage.getItem("cart")) || [];
 }
 
@@ -114,7 +114,6 @@ const renderCart = () => {
 
     container.innerHTML = html;
 
-    // Calculamos total
     cart.forEach(element => {
         total += element.quantity * element.price;
     });
@@ -122,5 +121,6 @@ const renderCart = () => {
     totalDisplay.textContent = " $ " + total;
 }
 
-
-renderCart()
+if (document.getElementById("cart-container") && document.getElementById("cart-total-amount")) {
+    renderCart();
+}
