@@ -608,13 +608,14 @@ a:focus {
   gap: 1rem;
 }
 
-.cart_section .display button{
+.cart_section .display a{
   background-color: #f0d43a;
   border: none;
   border-radius: 1rem;
   padding: 1.5rem;
   font-size: 1.2rem;
   font-weight: 600;
+  text-align: center;
 }
 
 .cart_section .modify-quantity {
