@@ -95,11 +95,12 @@
           <div class="detail-box">
             <div class="heading_container">
               <h2 id="product-name"></h2>
-              <h3 id="product-price"></h3>
+              <h3 style="font-weight: 600;" id="product-price"></h3>
             </div>
             <a id="add-to-cart-btn">
               Agregar al carrito
             </a>
+            <h6 style="font-weight: 100; font-size: .8rem; padding: 2rem 0 1rem 0">stock disponible: <span id="product-stock"></span></h6>
           </div>
         </div>
       </div>
@@ -260,37 +261,30 @@
   <script src="js/custom.js"></script>
   <!-- shopping cart js -->
   <script src="js/shopping-cart.js"></script>
+  <!-- utils js -->
+  <script type="module" src="js/utils.js"></script>
   <!-- embebed js -->
-  <script>
+  <script type="module">
+    import { fetchWithCache } from "./js/utils.js"
+
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get("id");
 
     const productImageUrl = `images/detail-w${productId}.png`
-
-    console.log(productImageUrl);
     
     const getProduct = async () => {
 
       try {
-        const res = await fetch(`http://localhost:8000/products/${productId}`);
-        
-        console.log(res);
-        
-        
-        if (!res.ok) {
-          window.location.href = "404.html";
-          return;
-        }
-        
-        const product = await res.json();
+        const product = await fetchWithCache(`http://localhost:8000/products/${productId}`, 5);
 
         document.getElementById("product-name").textContent = product.name;
         document.getElementById("product-price").textContent = "$" + product.price;
         document.getElementById("product-image").src = productImageUrl;
+        document.getElementById("product-stock").textContent = product.stock;
         
       } catch (error) {
         console.error("Error de red:", error);
-        window.location.href = "404.html"; // opcional si querés cubrir errores de red
+        window.location.href = "404.html";
       }
     }
 
