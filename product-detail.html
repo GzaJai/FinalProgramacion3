@@ -269,14 +269,32 @@
 
     console.log(productImageUrl);
     
+    const getProduct = async () => {
 
-    fetch(`http://localhost:8000/products/${productId}`)
-    .then(res => res.json())
-    .then(product => {
+      try {
+        const res = await fetch(`http://localhost:8000/products/${productId}`);
+        
+        console.log(res);
+        
+        
+        if (!res.ok) {
+          window.location.href = "404.html";
+          return;
+        }
+        
+        const product = await res.json();
+
         document.getElementById("product-name").textContent = product.name;
         document.getElementById("product-price").textContent = "$" + product.price;
         document.getElementById("product-image").src = productImageUrl;
-    });
+        
+      } catch (error) {
+        console.error("Error de red:", error);
+        window.location.href = "404.html"; // opcional si querés cubrir errores de red
+      }
+    }
+
+    getProduct()
   </script>
   <!-- Google Map -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap"></script>
