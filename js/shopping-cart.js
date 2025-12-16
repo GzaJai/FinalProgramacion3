@@ -50,14 +50,17 @@ const removeFromCart = (id) => {
 const decrementQuantity = (id) => {
     const cart = getCart();
 
-    const item = cart.find(product => product.id === id);
+    const item = cart.find(p => p.id === id);
     if (!item) return;
 
-    item.quantity--;
+    if (item.quantity > 1) {
+        item.quantity--;
+    } else {
+        const index = cart.findIndex(p => p.id === id);
+        cart.splice(index, 1);
+    }
 
-    const updatedCart = cart.filter(product => product.quantity > 0);
-
-    saveCart(updatedCart);
+    saveCart(cart);
     renderCart();
 }
 
@@ -74,6 +77,22 @@ const renderCart = () => {
     const container = document.getElementById("cart-container");
     const totalDisplay = document.getElementById("cart-total-amount");
 
+    container.addEventListener("click", (e) => {
+        const decrementBtn = e.target.closest(".decrement-btn");
+        const incrementBtn = e.target.closest(".increment-btn");
+
+        if (decrementBtn) {
+            const id = Number(decrementBtn.dataset.id);
+            decrementQuantity(id);
+            return;
+        }
+
+        if (incrementBtn) {
+            const id = Number(incrementBtn.dataset.id);
+            addToCart(id);
+        }
+    });
+
     let total = 0;
 
     if (cart.length === 0) {
@@ -85,8 +104,7 @@ const renderCart = () => {
     let html = "";
     for (let i = 0; i < cart.length; i += 3) {
         html += `<div class="row">`;
-
-        // Tomamos los siguientes 3 items (o menos si quedan menos de 3)
+        
         const items = cart.slice(i, i + 3);
         items.forEach(item => {
             html += `
@@ -100,16 +118,16 @@ const renderCart = () => {
                             <h6><span>$${item.price}</span></h6>
                         </div>
                         <div class="modify-quantity">
-                            <button onclick="decrementQuantity(${item.id})">-</button>
+                            <button class="decrement-btn" data-id="${item.id}">-</button>
                             <span>${item.quantity}</span>
-                            <button onclick="addToCart(${item.id})">+</button>
+                            <button class="increment-btn" data-id="${item.id}">+</button>
                         </div>
                     </div>
                 </div>
             `;
         });
 
-        html += `</div>`; // cerramos la fila
+        html += `</div>`;
     }
 
     container.innerHTML = html;
