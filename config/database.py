@@ -6,15 +6,18 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 
-from models.address import AddressModel  # noqa
 from models.base_model import base
-from models.bill import BillModel  # noqa
-from models.category import CategoryModel  # noqa
-from models.client import ClientModel  # noqa
-from models.order import OrderModel  # noqa
-from models.order_detail import OrderDetailModel  # noqa
-from models.product import ProductModel  # noqa
-from models.review import ReviewModel  # noqa
+
+from models.user import User
+from models.category import CategoryModel
+from models.client import ClientModel
+from models.product import ProductModel
+from models.address import AddressModel
+from models.order import OrderModel
+from models.bill import BillModel
+from models.order_detail import OrderDetailModel
+from models.review import ReviewModel
+
 
 # Get logger (logging is configured in main.py)
 logger = logging.getLogger(__name__)

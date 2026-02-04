@@ -11,6 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette import status
 from starlette.responses import JSONResponse
+import config.cloudinary_config
 
 from config.logging_config import setup_logging
 from config.database import create_tables, engine
@@ -21,6 +22,7 @@ from middleware.request_id_middleware import RequestIDMiddleware
 # Setup centralized logging FIRST
 setup_logging()
 logger = logging.getLogger(__name__)
+from controllers.auth_controller import AuthController
 from controllers.address_controller import AddressController
 from controllers.bill_controller import BillController
 from controllers.category_controller import CategoryController
@@ -58,6 +60,9 @@ def create_fastapi_app() -> FastAPI:
             content={"message": str(exc)},
         )
 
+    auth_controller = AuthController()
+    fastapi_app.include_router(auth_controller.router)
+
     client_controller = ClientController()
     fastapi_app.include_router(client_controller.router, prefix="/clients")
 
@@ -93,8 +98,15 @@ def create_fastapi_app() -> FastAPI:
     cors_origins = os.getenv("CORS_ORIGINS", "*").split(",")
     fastapi_app.add_middleware(
         CORSMiddleware,
-        allow_origins=cors_origins if cors_origins != ["*"] else ["*"],
-        allow_credentials=True,
+        # allow_origins=cors_origins if cors_origins != ["*"] else ["*"],
+        allow_origins=["*"],
+        # allow_origins=[
+        #     "http://127.0.0.1:5500",
+        #     "http://localhost:5500",
+        #     "http://127.0.0.1:8000",
+        #     "http://localhost:8000",
+        # ],
+        allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
     )

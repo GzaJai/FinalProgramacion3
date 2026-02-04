@@ -2,6 +2,7 @@
 import logging
 from typing import List, Optional
 from sqlalchemy.orm import Session
+from cloudinary.uploader import upload
 
 from models.product import ProductModel
 from repositories.product_repository import ProductRepository
@@ -82,16 +83,43 @@ class ProductService(BaseServiceImpl):
 
         return product
 
-    def save(self, schema: ProductSchema) -> ProductSchema:
+    def save(self, schema: ProductSchema, image_file=None) -> ProductSchema:
         """
-        Create new product and invalidate list cache
+        Create new product, upload image to Cloudinary if provided,
+        persist product, and invalidate cache.
         """
-        product = super().save(schema)
 
-        # Invalidate list cache (all paginated lists)
+        # 1️⃣ Subida de imagen (si existe)
+        if image_file:
+            # Asegura que el stream esté al inicio
+            image_file.file.seek(0)
+
+            upload_result = upload(
+                image_file.file,
+                folder="products",
+                resource_type="image"
+            )
+
+            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", upload_result)
+
+            # SOLO strings en el schema
+            schema.image_url = upload_result["secure_url"]
+            schema.image_public_id = upload_result["public_id"]
+
+        # 2️⃣ Guardado en DB (esto suele devolver un modelo SQLAlchemy)
+        db_product = super().save(schema)
+
+        # 3️⃣ Conversión EXPLÍCITA a schema limpio (clave del fix)
+        # Evita que FastAPI intente serializar cosas raras
+        if isinstance(db_product, ProductSchema):
+            result = db_product
+        else:
+            result = ProductSchema.model_validate(db_product)
+
+        # 4️⃣ Invalidar cache
         self._invalidate_list_cache()
 
-        return product
+        return result
 
     def update(self, id_key: int, schema: ProductSchema) -> ProductSchema:
         """

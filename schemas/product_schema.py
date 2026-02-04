@@ -10,15 +10,28 @@ if TYPE_CHECKING:
     from schemas.review_schema import ReviewSchema
 
 
+from typing import Optional
+
 class ProductSchema(BaseSchema):
     """Schema for Product entity with validations."""
 
-    name: str = Field(..., min_length=1, max_length=200, description="Product name (required)")
-    price: float = Field(..., gt=0, description="Product price (must be greater than 0, required)")
-    stock: int = Field(default=0, ge=0, description="Product stock quantity (must be >= 0)")
+    name: str = Field(..., min_length=1, max_length=200)
+    price: float = Field(..., gt=0)
+    stock: int = Field(default=0, ge=0)
 
-    category_id: int = Field(..., description="Category ID reference (required)")
+    image_url: Optional[str] = Field(
+        default=None,
+        description="Public URL of the product image"
+    )
+
+    image_public_id: Optional[str] = Field(
+        default=None,
+        description="Cloud provider image identifier"
+    )
+
+    category_id: int = Field(...)
 
     category: Optional['CategorySchema'] = None
     reviews: Optional[List['ReviewSchema']] = []
     order_details: Optional[List['OrderDetailSchema']] = []
+
