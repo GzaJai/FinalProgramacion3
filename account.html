@@ -92,8 +92,12 @@
                         <h2>
                             Mi cuenta
                         </h2>
-                        <p id="account-name"></p>
-                        <p id="account-role"></p>
+                        <p style="font-weight: 700;">Nombre: 
+                            <span style="font-weight: 500;"  id="account-name"></span>
+                        </p>
+                        <p style="font-weight: 700;">Rol: 
+                            <span style="font-weight: 500;" id="account-role"></span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -224,7 +228,7 @@
         if (user.role == "admin") {
             accountName.textContent = user.email;
         } else if (user.role == "customer") {
-            accountName.textContent = user.firstname + user.lastname;
+            accountName.textContent = user.client.name;
         }
         accountRole.textContent = user.role;
     
