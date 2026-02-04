@@ -1085,4 +1085,16 @@ a:focus {
 a {
   cursor: pointer;
 }
+
+@layer utilities {
+  .no-spin {
+    -moz-appearance: textfield;
+  }
+
+  .no-spin::-webkit-inner-spin-button,
+  .no-spin::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
 /*# sourceMappingURL=style.css.map */

@@ -34,6 +34,7 @@
 <body class="sub_page">
 
   <div class="hero_area">
+
     <!-- header section strats -->
     <header class="header_section">
       <div class="container-fluid">
@@ -43,74 +44,61 @@
               Timups
             </span>
           </a>
-
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class=""> </span>
-          </button>
-
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav">
-              <li class="nav-item active">
-                <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="watches.html"> Relojes </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="about.html">Conocenos </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="contact.html">Contactanos</a>
-              </li>
-            </ul>
-            <div class="user_option-box">
-              <a href="">
-                <i class="fa fa-user" aria-hidden="true"></i>
-              </a>
-              <a href="shopping-cart.html">
-                <i class="fa fa-cart-plus" aria-hidden="true"></i>
-              </a>
-              <a href="">
-                <i class="fa fa-search" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
         </nav>
       </div>
     </header>
     <!-- end header section -->
   </div>
 
-  <!-- cart section -->
+  <!-- contact section -->
 
-  <section class="cart_section layout_padding">
-    <div class="container  ">
-      <div class="row">
-          <div class="col-md-6 col-lg-7">
-              <div class="detail-box">
-                  <div class="heading_container">
-                      <h2>
-                          Carrito
+  <section class="contact_section layout_padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8" style="margin: 0 auto;">
+                <div class="form_container">
+                    <div class="heading_container">
+                        <h2>
+                            Crea tu cuenta
                         </h2>
+                    </div>
+                    <form id="client-form" action="">
+                      <div>
+                          <label for="email">Nombre: </label>
+                          <input type="text" name="firstname" placeholder="Pedro" />
+                      </div>
+                      <div>
+                          <label for="email">Apellido: </label>
+                          <input type="text" name="lastname" placeholder="Perez" />
+                      </div>
+                      <div>
+                          <label for="email">Email: </label>
+                          <input type="text" name="email" placeholder="ejemplo@email.com" />
+                      </div>
+                      <div>
+                          <label for="password">Contraseña: </label>
+                          <input type="password" name="password" placeholder="••••••••" />
+                      </div>
+                      <button type="submit">Crear cuenta</button>
+                    </form>
+                    <span id="error-message" style="color: red;" hidden></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8" style="margin: 0 auto;">
+                <div class="form_container" style="margin: 0 auto;">
+                        <button id="continue-button">
+                            Continuar
+                        </button>
                     </div>
                 </div>
             </div>
-      </div>
-        <div class="row">
-            <div class="col-md-6 col-lg-7">
-                <div class="detail-box">
-                    <div id="cart-container"></div>
-                </div>
-            </div>
-            <div class="display">
-                <h3>Total:<span style="font-weight: 600; font-size: 2.5rem;" id="cart-total-amount"></span></h3>
-                <a href="checkout.html">Realizar compra</a>
-            </div>
-      </div>
+        </div>
     </div>
   </section>
 
-  <!-- end cart section -->
+  <!-- end contact section -->
 
   <!-- footer section -->
   <footer class="footer_section">
@@ -183,10 +171,41 @@
   </script>
   <!-- custom js -->
   <script src="js/custom.js"></script>
-  <!-- shopping cart js -->
-  <script type="module" src="js/shopping-cart.js"></script>
-  <!-- Google Map -->
+  
+  <!-- sign up js -->
+  <script>
+    const form = document.getElementById("client-form");
+    const errorSpan = document.getElementById("error-message");
 
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      const payload = {
+        firstname: formData.get("firstname"),
+        lastname: formData.get("lastname"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+      };
+
+      try {
+        const response = await fetch("http://localhost:8000/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+      } catch (err) {
+        errorSpan.textContent = err.message;
+        errorSpan.hidden = false;
+      }
+    })
+  </script>
+
+  <!-- Google Map -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap"></script>
   <!-- End Google Map -->
 
 </body>
