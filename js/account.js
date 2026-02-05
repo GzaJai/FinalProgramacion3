@@ -22,10 +22,9 @@ function checkAuth() {
       return res.json();
     })
     .then(user => {
-      renderAccount(user);
     })
     .catch(() => {
-      localStorage.removeItem("access_token");
+      sessionStorage.removeItem("access_token");
       redirectToLogin();
     });
 }
