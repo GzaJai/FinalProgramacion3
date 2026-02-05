@@ -16,6 +16,7 @@ class ProductSchema(BaseSchema):
     """Schema for Product entity with validations."""
 
     name: str = Field(..., min_length=1, max_length=200)
+    description: Optional[str] = None
     price: float = Field(..., gt=0)
     stock: int = Field(default=0, ge=0)
 

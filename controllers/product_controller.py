@@ -26,6 +26,7 @@ class ProductController(BaseControllerImpl):
         @self.router.post("/", response_model=ProductSchema)
         def create_product_protected(
             name: str = Form(...),
+            description: str = Form(...),
             price: float = Form(...),
             stock: int = Form(...),
             category_id: int = Form(...),
@@ -37,6 +38,7 @@ class ProductController(BaseControllerImpl):
             """Crear producto - SOLO ADMINS"""
             product_data = ProductSchema(
                 name=name,
+                description=description,
                 price=price,
                 stock=stock,
                 category_id=category_id,
