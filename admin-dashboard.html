@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <title>Timups | Admin Dashboard</title>
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+  <!-- font awesome -->
+  <link href="css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- custom styles -->
+  <link href="css/style.css" rel="stylesheet" />
+  <link href="css/responsive.css" rel="stylesheet" />
+</head>
+
+<body>
+
+  <!-- header -->
+  <header class="header_section">
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-lg custom_nav-container">
+        <a class="navbar-brand" href="index.html">
+          <span>Timups Admin</span>
+        </a>
+
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Volver al sitio</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-danger" href="#">Cerrar sesión</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- dashboard -->
+  <section class="layout_padding">
+    <div class="container">
+
+      <div class="heading_container heading_center mb-5">
+        <h2>Panel de Administración</h2>
+        <p>Gestioná productos y pedidos desde un solo lugar</p>
+      </div>
+
+      <!-- acciones principales -->
+      <div class="row text-center">
+
+        <div class="col-md-3">
+          <div class="box">
+            <div class="detail-box">
+              <i class="fa fa-plus fa-2x mb-3"></i>
+              <h5>Agregar producto</h5>
+              <a href="#add-product" class="btn btn-primary mt-2">Ir</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="box">
+            <div class="detail-box">
+              <i class="fa fa-edit fa-2x mb-3"></i>
+              <h5>Editar productos</h5>
+              <a href="#manage-products" class="btn btn-primary mt-2">Ir</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="box">
+            <div class="detail-box">
+              <i class="fa fa-shopping-cart fa-2x mb-3"></i>
+              <h5>Ventas realizadas</h5>
+              <a href="#sales" class="btn btn-primary mt-2">Ver</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="box">
+            <div class="detail-box">
+              <i class="fa fa-truck fa-2x mb-3"></i>
+              <h5>Pedidos por entregar</h5>
+              <a href="#pending-orders" class="btn btn-primary mt-2">Ver</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- agregar producto -->
+  <section id="add-product" class="layout_padding">
+    <div class="container">
+      <div class="heading_container">
+        <h2>Agregar nuevo producto</h2>
+      </div>
+
+      <form id="product-form" class="row">
+        <div class="col-md-6">
+            <label for="name"></label>
+            <input name="name" type="text" class="form-control mb-3" placeholder="Nombre del producto">
+        </div>
+        <div class="col-md-3">
+            <label for="price"></label>
+            <input name="price" type="number" class="form-control mb-3" placeholder="Precio">
+        </div>
+        <div class="col-md-3">
+            <label for="stock"></label>
+            <input name="stock" type="number" class="form-control mb-3" placeholder="Stock">
+        </div>
+        <div class="col-md-12">
+            <label for="description"></label>
+            <textarea name="description" class="form-control mb-3" placeholder="Descripción"></textarea>
+        </div>
+        <div class="col-md-12">
+            <label for="image"></label>
+            <input name="image" type="file" accept="image/*" class="form-control mb-3" />
+        </div>
+        <div class="col-md-12">
+          <button class="btn btn-success">Guardar producto</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- gestionar productos -->
+  <section id="manage-products" class="layout_padding">
+    <div class="container">
+      <div class="heading_container">
+        <h2>Productos existentes</h2>
+      </div>
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="products-table-body">
+          <tr>
+            <td>Smartwatch Pro</td>
+            <td>$120</td>
+            <td>15</td>
+            <td>
+              <button class="btn btn-warning btn-sm">Editar</button>
+              <button class="btn btn-danger btn-sm">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ventas -->
+  <section id="sales" class="layout_padding">
+    <div class="container">
+      <div class="heading_container">
+        <h2>Ventas realizadas</h2>
+      </div>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#1023</td>
+            <td>Juan Pérez</td>
+            <td>$240</td>
+            <td>02/02/2026</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- pedidos pendientes -->
+  <section id="pending-orders" class="layout_padding">
+    <div class="container">
+      <div class="heading_container">
+        <h2>Pedidos por entregar</h2>
+      </div>
+
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Pedido</th>
+            <th>Cliente</th>
+            <th>Dirección</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#1031</td>
+            <td>Ana López</td>
+            <td>Av. San Martín 123</td>
+            <td><span class="badge badge-warning">Pendiente</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- scripts -->
+  <script src="js/jquery-3.4.1.min.js"></script>
+  <script src="js/bootstrap.js"></script>
+
+  <!-- check auth  -->
+  <script src="js/check-auth-admin.js"></script>
+  
+  <!-- add product  -->
+  <script type="module">
+
+    const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dv5k24idq/image/upload';
+    const CLOUDINARY_UPLOAD_PRESET = 'timups';
+
+    const form = document.getElementById("product-form");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      let imageUrl = null;
+      let imagePublicId = null;
+
+      // 1️⃣ Primero subir imagen a Cloudinary (si existe)
+      const imageInput = form.querySelector('input[name="image"]');
+      if (imageInput.files.length > 0) {
+        try {
+          const formData = new FormData();
+          formData.append('file', imageInput.files[0]);
+          formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+          formData.append('folder', 'products');
+
+          console.log("📤 Subiendo imagen a Cloudinary...");
+          
+          const cloudinaryResponse = await fetch(CLOUDINARY_URL, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!cloudinaryResponse.ok) {
+            throw new Error('Error al subir imagen a Cloudinary');
+          }
+
+          const cloudinaryData = await cloudinaryResponse.json();
+          imageUrl = cloudinaryData.secure_url;
+          imagePublicId = cloudinaryData.public_id;
+          
+          console.log("✅ Imagen subida:", imageUrl);
+          
+        } catch (err) {
+          console.error("❌ Error subiendo imagen:", err);
+          alert("Error al subir la imagen. Intenta de nuevo.");
+          return; // Detener el proceso
+        }
+      }
+
+      const productData = {
+        name: form.name.value,
+        description: form.description.value,
+        price: parseFloat(form.price.value),
+        stock: parseInt(form.stock.value),
+        category_id: 1,
+        image_url: imageUrl,
+        image_public_id: imagePublicId
+      };
+
+      console.log("📤 Enviando producto al backend:", productData);
+
+      try {
+        const response = await fetch("http://localhost:8000/products/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(productData)
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          console.error("Error del backend:", error);
+          alert(`Error: ${JSON.stringify(error.detail)}`);
+          return;
+        }
+
+        const data = await response.json();
+        console.log("✅ Producto creado:", data);
+        alert("¡Producto creado exitosamente!");
+        form.reset();
+        
+      } catch (err) {
+        console.error("❌ Error:", err);
+        alert("Error al crear el producto");
+      }
+    });
+
+  </script>
+
+  <script>
+
+    const token = sessionStorage.getItem("access_token");
+
+    if (!token) {
+      redirectToLogin();
+    }
+
+    fetch("http://localhost:8000/products/?skip=0&limit=100", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    })
+      .then(res => {
+      if (!res.ok) {
+        throw new Error("Token inválido");
+      }
+      return res.json();
+    })
+    .then(data => {
+      renderProducts(data);
+      
+    })
+    .catch(() => {
+      sessionStorage.removeItem("access_token");
+      redirectToLogin();
+    });
+
+    function renderProducts(products) {
+      const tbody = document.getElementById("products-table-body");
+      tbody.innerHTML = "";
+
+      products.forEach(product => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${product.name}</td>
+          <td>$${product.price}</td>
+          <td>${product.stock}</td>
+          <td>
+            <button class="btn btn-warning btn-sm">Editar</button>
+            <button class="btn btn-danger btn-sm">Eliminar</button>
+          </td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    }
+
+  </script>
+
+</body>
+</html>
