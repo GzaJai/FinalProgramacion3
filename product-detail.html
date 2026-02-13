@@ -88,7 +88,7 @@
       <div class="row">
         <div class="col-md-6 col-lg-5 ">
           <div class="img-box">
-            <img id="product-image" alt="">
+            <img id="product-image"  alt="">
           </div>
         </div>
         <div class="col-md-6 col-lg-7">
@@ -102,6 +102,7 @@
             </a>
             <h6 style="font-weight: 100; font-size: .8rem; padding: 2rem 0 1rem 0">stock disponible: <span id="product-stock"></span></h6>
           </div>
+          <p id="product-description"></p>
         </div>
       </div>
     </div>
@@ -269,8 +270,6 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get("id");
-
-    const productImageUrl = `images/detail-w${productId}.png`
     
     const getProduct = async () => {
 
@@ -279,8 +278,9 @@
 
         document.getElementById("product-name").textContent = product.name;
         document.getElementById("product-price").textContent = "$" + product.price;
-        document.getElementById("product-image").src = productImageUrl;
+        document.getElementById("product-image").src = product.image_url;
         document.getElementById("product-stock").textContent = product.stock;
+        document.getElementById("product-description").textContent = product.description;
         
       } catch (error) {
         console.error("Error de red:", error);
