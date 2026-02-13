@@ -126,7 +126,6 @@ const renderCart = () => {
     totalDisplay.textContent = " $ " + total;
 }
 
-// Event delegation: un solo listener permanente en el contenedor
 const container = document.getElementById("cart-container");
 if (container) {
     container.addEventListener("click", (e) => {
