@@ -31,7 +31,8 @@ const addToCart = (id) => {
                 id: product.id_key,
                 name: product.name,
                 price: product.price,
-                quantity: 1
+                quantity: 1,
+                image_url: product.image_url
             })
         }
         
@@ -77,22 +78,6 @@ const renderCart = () => {
     const container = document.getElementById("cart-container");
     const totalDisplay = document.getElementById("cart-total-amount");
 
-    container.addEventListener("click", (e) => {
-        const decrementBtn = e.target.closest(".decrement-btn");
-        const incrementBtn = e.target.closest(".increment-btn");
-
-        if (decrementBtn) {
-            const id = Number(decrementBtn.dataset.id);
-            decrementQuantity(id);
-            return;
-        }
-
-        if (incrementBtn) {
-            const id = Number(incrementBtn.dataset.id);
-            addToCart(id);
-        }
-    });
-
     let total = 0;
 
     if (cart.length === 0) {
@@ -107,12 +92,14 @@ const renderCart = () => {
         
         const items = cart.slice(i, i + 3);
         items.forEach(item => {
+            console.log(item);
+            
             html += `
                 <div class="col-sm-6 col-xl-3">
                     <div class="box shopping-cart-item">
                     <h4>${item.name}</h4>
                     <div class="img-box">
-                            <img src="images/w${item.id}.png" alt="">
+                            <img src=${item.image_url} alt="">
                         </div>
                         <div class="detail-box">
                             <h6><span>$${item.price}</span></h6>
@@ -137,6 +124,26 @@ const renderCart = () => {
     });
 
     totalDisplay.textContent = " $ " + total;
+}
+
+// Event delegation: un solo listener permanente en el contenedor
+const container = document.getElementById("cart-container");
+if (container) {
+    container.addEventListener("click", (e) => {
+        const decrementBtn = e.target.closest(".decrement-btn");
+        const incrementBtn = e.target.closest(".increment-btn");
+
+        if (decrementBtn) {
+            const id = Number(decrementBtn.dataset.id);
+            decrementQuantity(id);
+            return;
+        }
+
+        if (incrementBtn) {
+            const id = Number(incrementBtn.dataset.id);
+            addToCart(id);
+        }
+    });
 }
 
 if (document.getElementById("cart-container") && document.getElementById("cart-total-amount")) {
