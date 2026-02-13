@@ -59,7 +59,7 @@ class OrderDetailService(BaseServiceImpl):
         # SELECT FOR UPDATE locks the row until transaction completes
         try:
             stmt = select(ProductModel).where(
-                ProductModel.id_key == schema.product_id
+                ProductModel.id == schema.product_id  # ← CAMBIO: id en lugar de id_key
             ).with_for_update()
 
             product_model = self._product_repository.session.execute(stmt).scalar_one_or_none()
@@ -159,7 +159,7 @@ class OrderDetailService(BaseServiceImpl):
             # 🔒 Use SELECT FOR UPDATE to lock the product row
             try:
                 stmt = select(ProductModel).where(
-                    ProductModel.id_key == product_id
+                    ProductModel.id == product_id  # ← CAMBIO: id en lugar de id_key
                 ).with_for_update()
 
                 product_model = self._product_repository.session.execute(stmt).scalar_one_or_none()
@@ -222,7 +222,7 @@ class OrderDetailService(BaseServiceImpl):
         # 🔒 Use SELECT FOR UPDATE to lock the product row before restoring stock
         try:
             stmt = select(ProductModel).where(
-                ProductModel.id_key == order_detail.product_id
+                ProductModel.id == order_detail.product_id  # ← CAMBIO: id en lugar de id_key
             ).with_for_update()
 
             product_model = self._product_repository.session.execute(stmt).scalar_one_or_none()

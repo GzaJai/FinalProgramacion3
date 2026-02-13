@@ -1,15 +1,17 @@
-"""Category schema with validation."""
-from typing import Optional, List, TYPE_CHECKING
-from pydantic import Field
-
-from schemas.base_schema import BaseSchema
-
-if TYPE_CHECKING:
-    from schemas.product_schema import ProductSchema
+# schemas/category_schema.py
+from pydantic import BaseModel, Field, computed_field
+from typing import Optional
 
 
-class CategorySchema(BaseSchema):
-    """Schema for Category entity with validations."""
-
-    name: str = Field(..., min_length=1, max_length=100, description="Category name (required, unique)")
-#    products: Optional[List['ProductSchema']] = []
+class CategorySchema(BaseModel):
+    id: Optional[int] = None
+    name: str = Field(..., min_length=1)
+    
+    # 👇 Campo calculado que devuelve el mismo valor que id
+    @computed_field
+    @property
+    def id_key(self) -> Optional[int]:
+        return self.id
+    
+    class Config:
+        from_attributes = True

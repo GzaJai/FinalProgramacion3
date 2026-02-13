@@ -1,6 +1,3 @@
-"""
-BaseRepository implementation with best practices and sanitized logging
-"""
 import logging
 from typing import Type, List, Optional
 from sqlalchemy.orm import Session
@@ -28,7 +25,7 @@ class BaseRepositoryImpl(BaseRepository):
         self._model = model
         self._schema = schema
         self._session = db
-        self.logger = get_sanitized_logger(__name__)  # P11: Sanitized logging
+        self.logger = get_sanitized_logger(__name__)
 
     @property
     def session(self) -> Session:
@@ -45,12 +42,12 @@ class BaseRepositoryImpl(BaseRepository):
         """Get the Pydantic schema class"""
         return self._schema
 
-    def find(self, id_key: int) -> BaseSchema:
+    def find(self, id_key: int) -> BaseSchema:  # 👈 Mantener id_key como parámetro
         """
         Find a single record by ID
 
         Args:
-            id_key: The primary key value
+            id_key: The primary key value (legacy name, maps to model.id)
 
         Returns:
             The schema instance
@@ -59,8 +56,8 @@ class BaseRepositoryImpl(BaseRepository):
             InstanceNotFoundError: If the record is not found
         """
         try:
-            # Use SQLAlchemy 2.0 style query
-            stmt = select(self.model).where(self.model.id_key == id_key)
+            # 👇 CAMBIO: Usar model.id en lugar de model.id_key
+            stmt = select(self.model).where(self.model.id == id_key)
             model = self.session.scalars(stmt).first()
 
             if model is None:
@@ -143,7 +140,7 @@ class BaseRepositoryImpl(BaseRepository):
             self.logger.error(f"Error saving {self.model.__name__}: {e}")
             raise
 
-    def update(self, id_key: int, changes: dict) -> BaseSchema:
+    def update(self, id_key: int, changes: dict) -> BaseSchema:  # 👈 Mantener id_key como parámetro
         """
         Update an existing record with security validation
 
@@ -151,7 +148,7 @@ class BaseRepositoryImpl(BaseRepository):
         unauthorized updates to protected attributes or SQLAlchemy internals.
 
         Args:
-            id_key: The primary key value
+            id_key: The primary key value (legacy name, maps to model.id)
             changes: Dictionary of fields to update
 
         Returns:
@@ -163,14 +160,16 @@ class BaseRepositoryImpl(BaseRepository):
         """
         # Protected attributes that should never be updated
         PROTECTED_ATTRIBUTES = {
-            'id_key',  # Primary key
-            '_sa_instance_state',  # SQLAlchemy internal
-            '__class__',  # Python magic attribute
-            '__dict__',  # Python magic attribute
+            'id',  # 👈 CAMBIO: Proteger 'id' en lugar de 'id_key'
+            'id_key',  # Mantener por si acaso existe como propiedad
+            '_sa_instance_state',
+            '__class__',
+            '__dict__',
         }
 
         try:
-            stmt = select(self.model).where(self.model.id_key == id_key)
+            # 👇 CAMBIO: Usar model.id en lugar de model.id_key
+            stmt = select(self.model).where(self.model.id == id_key)
             instance = self.session.scalars(stmt).first()
 
             if instance is None:
@@ -237,18 +236,19 @@ class BaseRepositoryImpl(BaseRepository):
             self.logger.error(f"Error updating {self.model.__name__} with id {id_key}: {e}")
             raise
 
-    def remove(self, id_key: int) -> None:
+    def remove(self, id_key: int) -> None:  # 👈 Mantener id_key como parámetro
         """
         Delete a record from the database
 
         Args:
-            id_key: The primary key value
+            id_key: The primary key value (legacy name, maps to model.id)
 
         Raises:
             InstanceNotFoundError: If the record is not found
         """
         try:
-            stmt = select(self.model).where(self.model.id_key == id_key)
+            # 👇 CAMBIO: Usar model.id en lugar de model.id_key
+            stmt = select(self.model).where(self.model.id == id_key)
             model = self.session.scalars(stmt).first()
 
             if model is None:

@@ -1,6 +1,6 @@
 """OrderDetail schema with validation."""
 from typing import Optional, TYPE_CHECKING
-from pydantic import Field
+from pydantic import Field, ConfigDict
 
 from schemas.base_schema import BaseSchema
 
@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 
 class OrderDetailSchema(BaseSchema):
     """Schema for OrderDetail entity with validations."""
+    
+    model_config = ConfigDict(from_attributes=True)
 
     quantity: int = Field(
         ...,
@@ -33,6 +35,3 @@ class OrderDetailSchema(BaseSchema):
         ...,
         description="Product ID reference (required)"
     )
-
-    order: Optional['OrderSchema'] = None
-    product: Optional['ProductSchema'] = None

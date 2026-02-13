@@ -1,4 +1,3 @@
-"""Product service with Redis caching integration and sanitized logging."""
 import logging
 from typing import List, Optional
 from sqlalchemy.orm import Session
@@ -11,7 +10,7 @@ from services.base_service_impl import BaseServiceImpl
 from services.cache_service import cache_service
 from utils.logging_utils import get_sanitized_logger
 
-logger = get_sanitized_logger(__name__)  # P11: Sanitized logging
+logger = get_sanitized_logger(__name__)
 
 
 class ProductService(BaseServiceImpl):
@@ -59,14 +58,14 @@ class ProductService(BaseServiceImpl):
 
         return products
 
-    def get_one(self, id_key: int) -> ProductSchema:
+    def get_one(self, id: int) -> ProductSchema:  # 👈 CAMBIO: id_key → id
         """
         Get single product by ID with caching
 
-        Cache key pattern: products:id:{id_key}
+        Cache key pattern: products:id:{id}
         TTL: 5 minutes
         """
-        cache_key = self.cache.build_key(self.cache_prefix, "id", id=id_key)
+        cache_key = self.cache.build_key(self.cache_prefix, "id", id=id)  # 👈 CAMBIO
 
         # Try cache first
         cached_product = self.cache.get(cache_key)
@@ -76,7 +75,7 @@ class ProductService(BaseServiceImpl):
 
         # Get from database
         logger.debug(f"Cache MISS: {cache_key}")
-        product = super().get_one(id_key)
+        product = super().get_one(id)  # 👈 CAMBIO
 
         # Cache the result
         self.cache.set(cache_key, product.model_dump())
@@ -121,12 +120,12 @@ class ProductService(BaseServiceImpl):
 
         return result
 
-    def update(self, id_key: int, schema: ProductSchema) -> ProductSchema:
+    def update(self, id: int, schema: ProductSchema) -> ProductSchema:  # 👈 CAMBIO: id_key → id
         """
         Update product with transactional cache invalidation
 
         Args:
-            id_key: Product ID to update
+            id: Product ID to update
             schema: Validated ProductSchema with new data
 
         Returns:
@@ -137,25 +136,25 @@ class ProductService(BaseServiceImpl):
             ValueError: If validation fails
         """
         # Build cache keys BEFORE update (prepare for invalidation)
-        cache_key = self.cache.build_key(self.cache_prefix, "id", id=id_key)
+        cache_key = self.cache.build_key(self.cache_prefix, "id", id=id)  # 👈 CAMBIO
 
         try:
             # Update in database (atomic transaction)
-            product = super().update(id_key, schema)
+            product = super().update(id, schema)  # 👈 CAMBIO
 
             # Only invalidate cache AFTER successful DB commit
             self.cache.delete(cache_key)
             self._invalidate_list_cache()
 
-            logger.info(f"Product {id_key} updated and cache invalidated successfully")
+            logger.info(f"Product {id} updated and cache invalidated successfully")  # 👈 CAMBIO
             return product
 
         except Exception as e:
             # If update fails, cache remains consistent (no invalidation)
-            logger.error(f"Failed to update product {id_key}: {e}")
+            logger.error(f"Failed to update product {id}: {e}")  # 👈 CAMBIO
             raise
 
-    def delete(self, id_key: int) -> None:
+    def delete(self, id: int) -> None:  # 👈 CAMBIO: id_key → id
         """
         Delete product with validation to prevent loss of sales history
 
@@ -168,27 +167,27 @@ class ProductService(BaseServiceImpl):
 
         # Check if product has sales history
         stmt = select(OrderDetailModel).where(
-            OrderDetailModel.product_id == id_key
+            OrderDetailModel.product_id == id  # 👈 CAMBIO
         ).limit(1)
 
         # Get session from repository
-        has_sales = self._repository.session.scalars(stmt).first()
+        has_sales = self.db.scalars(stmt).first()  # 👈 CAMBIO: usar self.db
 
         if has_sales:
             logger.error(
-                f"Cannot delete product {id_key}: has associated sales history"
+                f"Cannot delete product {id}: has associated sales history"  # 👈 CAMBIO
             )
             raise ValueError(
-                f"Cannot delete product {id_key}: product has associated sales history. "
+                f"Cannot delete product {id}: product has associated sales history. "
                 f"Consider marking as inactive instead of deleting."
             )
 
         # Safe to delete
-        logger.info(f"Deleting product {id_key} (no sales history)")
-        super().delete(id_key)
+        logger.info(f"Deleting product {id} (no sales history)")  # 👈 CAMBIO
+        super().delete(id)  # 👈 CAMBIO
 
         # Invalidate specific product cache
-        cache_key = self.cache.build_key(self.cache_prefix, "id", id=id_key)
+        cache_key = self.cache.build_key(self.cache_prefix, "id", id=id)  # 👈 CAMBIO
         self.cache.delete(cache_key)
 
         # Invalidate list cache

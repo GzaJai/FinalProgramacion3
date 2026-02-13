@@ -1,6 +1,6 @@
 """Product schema for request/response validation."""
 from typing import Optional, List, TYPE_CHECKING
-from pydantic import Field
+from pydantic import Field, ConfigDict
 
 from schemas.base_schema import BaseSchema
 
@@ -10,11 +10,12 @@ if TYPE_CHECKING:
     from schemas.review_schema import ReviewSchema
 
 
-from typing import Optional
-
 class ProductSchema(BaseSchema):
     """Schema for Product entity with validations."""
-
+    
+    model_config = ConfigDict(from_attributes=True)
+    
+    id: Optional[int] = None
     name: str = Field(..., min_length=1, max_length=200)
     description: Optional[str] = None
     price: float = Field(..., gt=0)
@@ -34,5 +35,3 @@ class ProductSchema(BaseSchema):
 
     category: Optional['CategorySchema'] = None
     reviews: Optional[List['ReviewSchema']] = []
-    order_details: Optional[List['OrderDetailSchema']] = []
-

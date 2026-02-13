@@ -22,6 +22,16 @@ class ProductController(BaseControllerImpl):
             tags=["Products"]
         )
         
+        # 👇 SOBRESCRIBIR GET BY ID (si necesitas personalizarlo)
+        @self.router.get("/{id}", response_model=ProductSchema)
+        def get_product_by_id(
+            id: int,
+            db: Session = Depends(get_db)
+        ):
+            """Obtener producto por ID - PÚBLICO"""
+            service = ProductService(db)
+            return service.get_one(id)
+        
         # Sobrescribir ruta POST para agregar protección de admin
         @self.router.post("/", response_model=ProductSchema)
         def create_product_protected(
@@ -33,7 +43,7 @@ class ProductController(BaseControllerImpl):
             image_url: Optional[str] = Form(None),
             image_public_id: Optional[str] = Form(None),
             db: Session = Depends(get_db),
-            current_user: User = Depends(require_admin)  # 👈 PROTECCIÓN
+            current_user: User = Depends(require_admin)
         ):
             """Crear producto - SOLO ADMINS"""
             product_data = ProductSchema(
@@ -55,7 +65,7 @@ class ProductController(BaseControllerImpl):
             id: int,
             product_data: ProductSchema,
             db: Session = Depends(get_db),
-            current_user: User = Depends(require_admin)  # 👈 PROTECCIÓN
+            current_user: User = Depends(require_admin)
         ):
             """Actualizar producto - SOLO ADMINS"""
             service = ProductService(db)
@@ -66,7 +76,7 @@ class ProductController(BaseControllerImpl):
         def delete_product_protected(
             id: int,
             db: Session = Depends(get_db),
-            current_user: User = Depends(require_admin)  # 👈 PROTECCIÓN
+            current_user: User = Depends(require_admin)
         ):
             """Eliminar producto - SOLO ADMINS"""
             service = ProductService(db)
