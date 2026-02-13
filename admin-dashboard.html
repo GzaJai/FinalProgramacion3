@@ -317,7 +317,7 @@
 
   </script>
 
-  <script>
+<script>
 
     const token = sessionStorage.getItem("access_token");
 
@@ -353,19 +353,63 @@
 
       products.forEach(product => {
         const row = document.createElement("tr");
+        console.log(products[product]);
+        
 
         row.innerHTML = `
           <td>${product.name}</td>
           <td>$${product.price}</td>
           <td>${product.stock}</td>
           <td>
-            <button class="btn btn-warning btn-sm">Editar</button>
-            <button class="btn btn-danger btn-sm">Eliminar</button>
+            <button class="btn btn-warning btn-sm" onclick="editProduct(${product.id})">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id}, '${product.name}')">Eliminar</button>
           </td>
         `;
 
         tbody.appendChild(row);
       });
+    }
+
+    // 👇 NUEVA FUNCIÓN: Redirigir a página de edición
+    function editProduct(productId) {
+      window.location.href = `edit-product.html?id=${productId}`;
+    }
+
+    // 👇 NUEVA FUNCIÓN: Eliminar producto
+    async function deleteProduct(productId, productName) {
+      if (!confirm(`¿Estás seguro de eliminar "${productName}"?`)) {
+        return;
+      }
+
+      const token = sessionStorage.getItem("access_token");
+
+      try {
+        const response = await fetch(`http://localhost:8000/products/${productId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.detail || "Error al eliminar");
+        }
+
+        alert(`Producto "${productName}" eliminado exitosamente`);
+        
+        // Recargar la lista de productos
+        location.reload();
+
+      } catch (error) {
+        console.error("Error eliminando producto:", error);
+        alert(`Error: ${error.message}`);
+      }
+    }
+
+    function redirectToLogin() {
+      window.location.href = "login.html";
     }
 
   </script>
