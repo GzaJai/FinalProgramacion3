@@ -350,7 +350,6 @@
     })
     .catch(err => {
       console.error(err);
-      alert("Error al cargar la información del usuario");
       sessionStorage.removeItem("access_token");
       window.location.href = "login.html";
     });
