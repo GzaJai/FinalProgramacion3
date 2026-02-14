@@ -30,16 +30,19 @@ class AuthService:
             # Crear usuario
             new_user = User(
                 email=user_data.email,
+                name=user_data.name,  # ← AGREGADO
+                lastname=user_data.lastname,  # ← AGREGADO
                 role=UserRole.CUSTOMER
             )
             new_user.set_password(user_data.password)
             self.db.add(new_user)
             self.db.flush()
             
-            # Crear cliente asociado
+            # Crear cliente asociado (si todavía lo necesitas)
             new_client = ClientModel(
                 user_id=new_user.id,
                 name=user_data.name,
+                lastname=user_data.lastname,  # ← AGREGADO si Client también tiene lastname
                 phone=user_data.phone
             )
             self.db.add(new_client)
@@ -85,6 +88,8 @@ class AuthService:
             # Crear administrador
             new_admin = User(
                 email=admin_data.email,
+                name=admin_data.name,  # ← AGREGADO
+                lastname=admin_data.lastname,  # ← AGREGADO
                 role=UserRole.ADMIN
             )
             new_admin.set_password(admin_data.password)

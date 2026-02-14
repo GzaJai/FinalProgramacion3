@@ -19,7 +19,7 @@ class UserService(BaseServiceImpl):
         super().__init__(
             repository_class=UserRepository,
             model=User,
-            schema=UserRead,  # 👈 Cambio aquí
+            schema=UserRead,
             db=db
         )
 
@@ -46,6 +46,8 @@ class UserService(BaseServiceImpl):
         user_model = User(
             email=user_data.email,
             password_hash=password_hash,
+            name=user_data.name,  # ← AGREGADO
+            lastname=user_data.lastname,  # ← AGREGADO
             role=UserRole.ADMIN if user_data.role == "admin" else UserRole.CUSTOMER,
             is_active=True
         )
@@ -57,6 +59,8 @@ class UserService(BaseServiceImpl):
         return UserRead(
             id=db_user.id,
             email=db_user.email,
+            name=db_user.name,  # ← AGREGADO
+            lastname=db_user.lastname,  # ← AGREGADO
             role=db_user.role.value,
             is_active=db_user.is_active
         )
@@ -96,6 +100,8 @@ class UserService(BaseServiceImpl):
             return UserRead(
                 id=user.id,
                 email=user.email,
+                name=user.name,  # ← AGREGADO
+                lastname=user.lastname,  # ← AGREGADO
                 role=user.role.value,
                 is_active=user.is_active
             )
@@ -111,6 +117,8 @@ class UserService(BaseServiceImpl):
         return UserRead(
             id=updated_user.id,
             email=updated_user.email,
+            name=updated_user.name,  # ← AGREGADO
+            lastname=updated_user.lastname,  # ← AGREGADO
             role=updated_user.role.value,
             is_active=updated_user.is_active
         )

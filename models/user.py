@@ -18,6 +18,8 @@ class User(BaseModel):
 
     email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
+    name = Column(String(200), nullable=False)  # ← NUEVO
+    lastname = Column(String(200), nullable=False)  # ← NUEVO
     role = Column(SQLEnum(UserRole), default=UserRole.CUSTOMER, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
 
@@ -53,6 +55,8 @@ class User(BaseModel):
         return {
             'id': self.id,
             'email': self.email,
+            'name': self.name,  # ← AGREGADO
+            'lastname': self.lastname,  # ← AGREGADO
             'role': self.role.value,
             'is_active': self.is_active,
             'created_at': self.created_at.isoformat() if hasattr(self, 'created_at') else None,
