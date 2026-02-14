@@ -1,15 +1,21 @@
-from sqlalchemy.orm import Session
-from models.client import ClientModel
-from repositories.client_repository import ClientRepository
-from schemas.client_schema import ClientSchema
-from services.base_service_impl import BaseServiceImpl
+from typing import Optional, List, TYPE_CHECKING
+from pydantic import Field
+
+from schemas.base_schema import BaseSchema
+
+if TYPE_CHECKING:
+    from schemas.address_schema import AddressSchema
+    from schemas.order_schema import OrderSchema
 
 
-class ClientService(BaseServiceImpl):
-    def __init__(self, db: Session):
-        super().__init__(
-            repository_class=ClientRepository,
-            model=ClientModel,
-            schema=ClientSchema,
-            db=db
-        )
+class ClientSchema(BaseSchema):
+    """Schema for Client entity with validations."""
+    
+    name: str = Field(..., min_length=1, max_length=200)
+    lastname: str = Field(..., min_length=1, max_length=200)  # ← NUEVO CAMPO
+    email: Optional[str] = Field(None, pattern=r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+    telephone: Optional[str] = Field(None, pattern=r'^\+?[\d\s\-()]+$')
+    
+    # Relaciones opcionales
+    addresses: Optional[List['AddressSchema']] = []
+    orders: Optional[List['OrderSchema']] = []
