@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <title>Timups | Detalles de Orden</title>
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+  <!-- font awesome -->
+  <link href="css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- custom styles -->
+  <link href="css/style.css" rel="stylesheet" />
+  <link href="css/responsive.css" rel="stylesheet" />
+
+  <style>
+    .order-detail-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .status-badge {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      display: inline-block;
+    }
+    
+    .status-pending {
+      background: #ffc107;
+      color: #000;
+    }
+    
+    .status-processing {
+      background: #17a2b8;
+      color: white;
+    }
+    
+    .status-delivered {
+      background: #28a745;
+      color: white;
+    }
+    
+    .status-cancelled {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .product-item {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+    }
+    
+    .product-item:last-child {
+      border-bottom: none;
+    }
+    
+    .product-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    
+    .action-buttons {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .info-label {
+      font-weight: bold;
+      color: #666;
+    }
+    
+    .info-value {
+      color: #333;
+    }
+  </style>
+</head>
+
+<body class="sub_page">
+
+  <!-- header -->
+  <header class="header_section">
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-lg custom_nav-container">
+        <a class="navbar-brand" href="index.html">
+          <span>Timups Admin</span>
+        </a>
+
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="admin-dashboard.html">Volver al Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-danger" href="#" id="logout-btn">Cerrar sesión</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- order details section -->
+  <section class="layout_padding">
+    <div class="container">
+
+      <div class="heading_container mb-4">
+        <h2>Detalles de la Orden <span id="order-number"></span></h2>
+        <div id="order-status-badge"></div>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading" class="text-center">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Cargando...</span>
+        </div>
+        <p>Cargando detalles de la orden...</p>
+      </div>
+
+      <!-- Error -->
+      <div id="error-message" class="alert alert-danger" style="display: none;">
+        <strong>Error:</strong> <span id="error-text"></span>
+      </div>
+
+      <!-- Order Details Container -->
+      <div id="order-details-container" style="display: none;">
+        
+        <!-- Información del Cliente -->
+        <div class="order-detail-card">
+          <h4 class="mb-3"><i class="fa fa-user"></i> Información del Cliente</h4>
+          <div class="info-row">
+            <span class="info-label">Nombre:</span>
+            <span class="info-value" id="client-name"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Email:</span>
+            <span class="info-value" id="client-email"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Teléfono:</span>
+            <span class="info-value" id="client-phone"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Dirección de entrega:</span>
+            <span class="info-value" id="delivery-address"></span>
+          </div>
+        </div>
+
+        <!-- Información de la Orden -->
+        <div class="order-detail-card">
+          <h4 class="mb-3"><i class="fa fa-file-text"></i> Información de la Orden</h4>
+          <div class="info-row">
+            <span class="info-label">Fecha:</span>
+            <span class="info-value" id="order-date"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Método de entrega:</span>
+            <span class="info-value" id="delivery-method"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">ID de Factura:</span>
+            <span class="info-value" id="bill-id"></span>
+          </div>
+        </div>
+
+        <!-- Productos -->
+        <div class="order-detail-card">
+          <h4 class="mb-3"><i class="fa fa-shopping-cart"></i> Productos</h4>
+          <div id="products-container"></div>
+          
+          <div class="mt-4 text-right">
+            <h4>Total: <strong id="order-total"></strong></h4>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="action-buttons">
+          <button id="btn-mark-processing" class="btn btn-info" style="display: none;">
+            <i class="fa fa-clock-o"></i> Marcar como "En Proceso"
+          </button>
+          <button id="btn-mark-delivered" class="btn btn-success" style="display: none;">
+            <i class="fa fa-check"></i> Marcar como "Entregado"
+          </button>
+          <button id="btn-cancel-order" class="btn btn-danger" style="display: none;">
+            <i class="fa fa-times"></i> Cancelar Orden
+          </button>
+          <button id="btn-back" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Volver al Dashboard
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Modal de Confirmación -->
+  <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-title">Confirmar Acción</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="modal-body">
+          ¿Estás seguro de realizar esta acción?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="confirm-action">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- scripts -->
+  <script src="js/jquery-3.4.1.min.js"></script>
+  <script src="js/bootstrap.js"></script>
+
+  <script>
+    const token = sessionStorage.getItem("access_token");
+    
+    if (!token) {
+      window.location.href = "login.html";
+    }
+
+    // Obtener ID de la orden desde la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('id');
+
+    if (!orderId) {
+      showError("No se especificó el ID de la orden");
+    } else {
+      loadOrderDetails(orderId);
+    }
+
+    // Cargar detalles de la orden
+    async function loadOrderDetails(orderId) {
+      try {
+        // 1. Obtener la orden
+        const orderRes = await fetch(`http://localhost:8000/orders/${orderId}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (!orderRes.ok) throw new Error("Orden no encontrada");
+        const order = await orderRes.json();
+
+        // 2. Obtener el cliente
+        const clientRes = await fetch(`http://localhost:8000/clients/${order.client_id}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+        const client = await clientRes.json();
+
+        // 3. Obtener los order_details
+        const detailsRes = await fetch(`http://localhost:8000/order_details/`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+        const allDetails = await detailsRes.json();
+        const orderDetails = allDetails.filter(d => d.order_id === parseInt(orderId));
+
+        // 4. Obtener productos de cada detail
+        const detailsWithProducts = await Promise.all(
+          orderDetails.map(async (detail) => {
+            const productRes = await fetch(`http://localhost:8000/products/${detail.product_id}`);
+            const product = await productRes.json();
+            return { ...detail, product };
+          })
+        );
+
+        // Renderizar todo
+        renderOrderDetails(order, client, detailsWithProducts);
+
+      } catch (error) {
+        console.error("Error cargando orden:", error);
+        showError(error.message);
+      }
+    }
+
+    function renderOrderDetails(order, client, orderDetails) {
+      // Ocultar loading
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('order-details-container').style.display = 'block';
+
+      // Número de orden y estado
+      document.getElementById('order-number').textContent = `#${order.id_key}`;
+      
+      const statusBadge = document.getElementById('order-status-badge');
+      const statusInfo = getOrderStatusInfo(order.status);
+      statusBadge.innerHTML = `<span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>`;
+
+      // Información del cliente
+      document.getElementById('client-name').textContent = `${client.name} ${client.lastname}`;
+      document.getElementById('client-email').textContent = client.email;
+      document.getElementById('client-phone').textContent = client.telephone;
+      
+      // Dirección (primera dirección del cliente)
+      let address = 'No especificada';
+      if (client.addresses && client.addresses.length > 0) {
+        const addr = client.addresses[0];
+        address = `${addr.street} ${addr.number}, ${addr.city}`;
+      }
+      document.getElementById('delivery-address').textContent = address;
+
+      // Información de la orden
+      const date = new Date(order.date);
+      document.getElementById('order-date').textContent = date.toLocaleString('es-AR');
+      document.getElementById('delivery-method').textContent = getDeliveryMethod(order.delivery_method);
+      document.getElementById('bill-id').textContent = order.bill_id || 'N/A';
+
+      // Productos
+      const productsContainer = document.getElementById('products-container');
+      productsContainer.innerHTML = '';
+
+      orderDetails.forEach(detail => {
+        const productItem = document.createElement('div');
+        productItem.className = 'product-item row align-items-center';
+        
+        productItem.innerHTML = `
+          <div class="col-md-2">
+            <img src="${detail.product.image_url || 'images/default-product.png'}" 
+                 class="product-image" 
+                 alt="${detail.product.name}">
+          </div>
+          <div class="col-md-6">
+            <h5>${detail.product.name}</h5>
+            <p class="text-muted">${detail.product.description || ''}</p>
+          </div>
+          <div class="col-md-2 text-center">
+            <strong>Cantidad: ${detail.quantity}</strong>
+          </div>
+          <div class="col-md-2 text-right">
+            <strong>$${(detail.price * detail.quantity).toFixed(2)}</strong>
+            <br>
+            <small class="text-muted">($${detail.price} c/u)</small>
+          </div>
+        `;
+        
+        productsContainer.appendChild(productItem);
+      });
+
+      // Total
+      document.getElementById('order-total').textContent = `$${order.total.toFixed(2)}`;
+
+      // Mostrar/ocultar botones según el estado
+      setupActionButtons(order);
+    }
+
+    function setupActionButtons(order) {
+      const btnProcessing = document.getElementById('btn-mark-processing');
+      const btnDelivered = document.getElementById('btn-mark-delivered');
+      const btnCancel = document.getElementById('btn-cancel-order');
+
+      // Ocultar todos primero
+      btnProcessing.style.display = 'none';
+      btnDelivered.style.display = 'none';
+      btnCancel.style.display = 'none';
+
+      // Mostrar según el estado actual
+      switch (order.status) {
+        case 1: // Pendiente
+          btnProcessing.style.display = 'inline-block';
+          btnDelivered.style.display = 'inline-block';
+          btnCancel.style.display = 'inline-block';
+          break;
+        case 2: // En proceso
+          btnDelivered.style.display = 'inline-block';
+          btnCancel.style.display = 'inline-block';
+          break;
+        case 3: // Entregado
+          // No mostrar botones (ya está completo)
+          break;
+        case 4: // Cancelado
+          // No mostrar botones (ya está cancelado)
+          break;
+      }
+
+      // Event listeners
+      btnProcessing.onclick = () => showConfirmModal(
+        "Marcar como 'En Proceso'",
+        "¿Confirmar que esta orden está siendo procesada?",
+        () => updateOrderStatus(order.id_key, 2)
+      );
+
+      btnDelivered.onclick = () => showConfirmModal(
+        "Marcar como 'Entregado'",
+        "¿Confirmar que esta orden ha sido entregada al cliente?",
+        () => updateOrderStatus(order.id_key, 3)
+      );
+
+      btnCancel.onclick = () => showConfirmModal(
+        "Cancelar Orden",
+        "⚠️ ¿Estás seguro de CANCELAR esta orden? Esta acción no se puede deshacer.",
+        () => updateOrderStatus(order.id_key, 4),
+        'btn-danger'
+      );
+    }
+
+    function showConfirmModal(title, message, onConfirm, btnClass = 'btn-primary') {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').textContent = message;
+      
+      const confirmBtn = document.getElementById('confirm-action');
+      confirmBtn.className = `btn ${btnClass}`;
+      
+      // Remover listeners anteriores
+      const newConfirmBtn = confirmBtn.cloneNode(true);
+      confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+      
+      // Agregar nuevo listener
+      newConfirmBtn.onclick = () => {
+        $('#confirmModal').modal('hide');
+        onConfirm();
+      };
+      
+      $('#confirmModal').modal('show');
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+        try {
+            // 1. Primero obtener la orden completa
+            const getResponse = await fetch(`http://localhost:8000/orders/${orderId}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+            });
+
+            if (!getResponse.ok) throw new Error("Error al obtener la orden");
+            
+            const currentOrder = await getResponse.json();
+
+            // 2. Actualizar solo el campo status
+            const updatedOrder = {
+            date: currentOrder.date,
+            total: currentOrder.total,
+            delivery_method: currentOrder.delivery_method,
+            status: newStatus, // ← Solo cambiamos esto
+            client_id: currentOrder.client_id,
+            bill_id: currentOrder.bill_id
+            };
+
+            // 3. Enviar el objeto completo actualizado
+            const updateResponse = await fetch(`http://localhost:8000/orders/${orderId}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updatedOrder)
+            });
+
+            if (!updateResponse.ok) {
+            const error = await updateResponse.json();
+            throw new Error(error.detail || "Error al actualizar la orden");
+            }
+
+            const statusInfo = getOrderStatusInfo(newStatus);
+            alert(`✅ Orden actualizada a: ${statusInfo.text}`);
+            
+            // Recargar la página para ver cambios
+            location.reload();
+
+        } catch (error) {
+            console.error("Error:", error);
+            alert(`❌ Error al actualizar la orden: ${error.message}`);
+        }
+    }
+
+    function getOrderStatusInfo(status) {
+      const statuses = {
+        1: { text: 'Pendiente', class: 'status-pending' },
+        2: { text: 'En Proceso', class: 'status-processing' },
+        3: { text: 'Entregado', class: 'status-delivered' },
+        4: { text: 'Cancelado', class: 'status-cancelled' }
+      };
+      return statuses[status] || { text: 'Desconocido', class: '' };
+    }
+
+    function getDeliveryMethod(method) {
+      const methods = {
+        1: 'Envío a domicilio',
+        2: 'Retiro en tienda'
+      };
+      return methods[method] || 'No especificado';
+    }
+
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error-message').style.display = 'block';
+      document.getElementById('error-text').textContent = message;
+    }
+
+    // Botón volver
+    document.getElementById('btn-back').onclick = () => {
+      window.location.href = 'admin-dashboard.html';
+    };
+
+    // Cerrar sesión
+    document.getElementById('logout-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      sessionStorage.removeItem('access_token');
+      window.location.href = 'login.html';
+    });
+
+  </script>
+
+</body>
+</html>
