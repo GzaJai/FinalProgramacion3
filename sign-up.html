@@ -76,6 +76,10 @@
                           <input type="text" name="email" placeholder="ejemplo@email.com" />
                       </div>
                       <div>
+                          <label for="phone">Telefono: </label>
+                          <input type="number" name="phone" placeholder="261 123 1234" />
+                      </div>
+                      <div>
                           <label for="password">Contraseña: </label>
                           <input type="password" name="password" placeholder="••••••••" />
                       </div>
@@ -84,16 +88,7 @@
                     <span id="error-message" style="color: red;" hidden></span>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8" style="margin: 0 auto;">
-                <div class="form_container" style="margin: 0 auto;">
-                        <button id="continue-button">
-                            Continuar
-                        </button>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
     </div>
   </section>
@@ -183,10 +178,11 @@
       const formData = new FormData(form);
 
       const payload = {
-        firstname: formData.get("firstname"),
+        name: formData.get("firstname"),
         lastname: formData.get("lastname"),
         email: formData.get("email"),
         password: formData.get("password"),
+        phone: formData.get("phone")
       };
 
       try {
