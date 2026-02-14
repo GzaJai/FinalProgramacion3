@@ -35,7 +35,7 @@
               <a class="nav-link" href="index.html">Volver al sitio</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-danger" href="#">Cerrar sesión</a>
+              <a class="nav-link text-danger" href="#" id="logout-btn">Cerrar sesión</a>
             </li>
           </ul>
         </div>
@@ -110,15 +110,15 @@
       <form id="product-form" class="row">
         <div class="col-md-6">
             <label for="name"></label>
-            <input name="name" type="text" class="form-control mb-3" placeholder="Nombre del producto">
+            <input name="name" type="text" class="form-control mb-3" placeholder="Nombre del producto" required>
         </div>
         <div class="col-md-3">
             <label for="price"></label>
-            <input name="price" type="number" class="form-control mb-3" placeholder="Precio">
+            <input name="price" type="number" class="form-control mb-3" placeholder="Precio" required>
         </div>
         <div class="col-md-3">
             <label for="stock"></label>
-            <input name="stock" type="number" class="form-control mb-3" placeholder="Stock">
+            <input name="stock" type="number" class="form-control mb-3" placeholder="Stock" required>
         </div>
         <div class="col-md-12">
             <label for="description"></label>
@@ -153,13 +153,7 @@
         </thead>
         <tbody id="products-table-body">
           <tr>
-            <td>Smartwatch Pro</td>
-            <td>$120</td>
-            <td>15</td>
-            <td>
-              <button class="btn btn-warning btn-sm">Editar</button>
-              <button class="btn btn-danger btn-sm">Eliminar</button>
-            </td>
+            <td colspan="4" class="text-center">Cargando productos...</td>
           </tr>
         </tbody>
       </table>
@@ -176,18 +170,17 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>ID Orden</th>
             <th>Cliente</th>
             <th>Total</th>
             <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="sales-table-body">
           <tr>
-            <td>#1023</td>
-            <td>Juan Pérez</td>
-            <td>$240</td>
-            <td>02/02/2026</td>
+            <td colspan="6" class="text-center">Cargando ventas...</td>
           </tr>
         </tbody>
       </table>
@@ -206,16 +199,15 @@
           <tr>
             <th>Pedido</th>
             <th>Cliente</th>
-            <th>Dirección</th>
+            <th>Total</th>
+            <th>Fecha</th>
             <th>Estado</th>
+            <th>Acciones</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="pending-orders-table-body">
           <tr>
-            <td>#1031</td>
-            <td>Ana López</td>
-            <td>Av. San Martín 123</td>
-            <td><span class="badge badge-warning">Pendiente</span></td>
+            <td colspan="6" class="text-center">Cargando pedidos...</td>
           </tr>
         </tbody>
       </table>
@@ -308,6 +300,7 @@
         console.log("✅ Producto creado:", data);
         alert("¡Producto creado exitosamente!");
         form.reset();
+        loadProducts(); // Recargar lista de productos
         
       } catch (err) {
         console.error("❌ Error:", err);
@@ -319,12 +312,19 @@
 
 <script>
 
-    const token = sessionStorage.getItem("access_token");
+  const token = sessionStorage.getItem("access_token");
 
-    if (!token) {
-      redirectToLogin();
-    }
+  if (!token) {
+    redirectToLogin();
+  }
 
+  const clientsCache = new Map();
+
+  loadProducts();
+  loadSales();
+  loadPendingOrders();
+
+  function loadProducts() {
     fetch("http://localhost:8000/products/?skip=0&limit=100", {
       method: "GET",
       headers: {
@@ -333,86 +333,319 @@
       }
     })
       .then(res => {
-      if (!res.ok) {
-        throw new Error("Token inválido");
-      }
-      return res.json();
-    })
-    .then(data => {
-      renderProducts(data);
-      
-    })
-    .catch(() => {
-      sessionStorage.removeItem("access_token");
-      redirectToLogin();
-    });
-
-    function renderProducts(products) {
-      const tbody = document.getElementById("products-table-body");
-      tbody.innerHTML = "";
-
-      products.forEach(product => {
-        const row = document.createElement("tr");
-        console.log(products[product]);
-        
-
-        row.innerHTML = `
-          <td>${product.name}</td>
-          <td>$${product.price}</td>
-          <td>${product.stock}</td>
-          <td>
-            <button class="btn btn-warning btn-sm" onclick="editProduct(${product.id})">Editar</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id}, '${product.name}')">Eliminar</button>
-          </td>
-        `;
-
-        tbody.appendChild(row);
+        if (!res.ok) {
+          throw new Error("Token inválido");
+        }
+        return res.json();
+      })
+      .then(data => {
+        renderProducts(data);
+      })
+      .catch(() => {
+        sessionStorage.removeItem("access_token");
+        redirectToLogin();
       });
+  }
+
+  function renderProducts(products) {
+    const tbody = document.getElementById("products-table-body");
+    tbody.innerHTML = "";
+
+    if (products.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay productos</td></tr>';
+      return;
     }
 
-    // 👇 NUEVA FUNCIÓN: Redirigir a página de edición
-    function editProduct(productId) {
-      window.location.href = `edit-product.html?id=${productId}`;
+    products.forEach(product => {
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${product.name}</td>
+        <td>$${product.price}</td>
+        <td>${product.stock}</td>
+        <td>
+          <button class="btn btn-warning btn-sm" onclick="editProduct(${product.id})">Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id}, '${product.name}')">Eliminar</button>
+        </td>
+      `;
+
+      tbody.appendChild(row);
+    });
+  }
+
+  async function getClientWithCache(clientId) {
+    if (clientsCache.has(clientId)) {
+      return clientsCache.get(clientId);
     }
 
-    // 👇 NUEVA FUNCIÓN: Eliminar producto
-    async function deleteProduct(productId, productName) {
-      if (!confirm(`¿Estás seguro de eliminar "${productName}"?`)) {
-        return;
+    try {
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const clientRes = await fetch(`http://localhost:8000/clients/${clientId}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!clientRes.ok) {
+        throw new Error(`Error al obtener cliente ${clientId}`);
       }
 
-      const token = sessionStorage.getItem("access_token");
+      const client = await clientRes.json();
+      clientsCache.set(clientId, client);
 
-      try {
-        const response = await fetch(`http://localhost:8000/products/${productId}`, {
-          method: "DELETE",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        });
+      return client;
+    } catch (err) {
+      console.error(`Error obteniendo cliente ${clientId}:`, err);
+      return { name: 'N/A', lastname: '', addresses: [] };
+    }
+  }
 
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.detail || "Error al eliminar");
+  async function loadSales() {
+    try {
+      const response = await fetch("http://localhost:8000/orders/", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) throw new Error("Error al cargar ventas");
+
+      const orders = await response.json();
+
+      const ordersWithClients = [];
+      for (const order of orders) {
+        const client = await getClientWithCache(order.client_id);
+        ordersWithClients.push({ ...order, client });
+      }
+
+      renderSales(ordersWithClients);
+    } catch (error) {
+      console.error("Error cargando ventas:", error);
+      document.getElementById("sales-table-body").innerHTML =
+        '<tr><td colspan="6" class="text-center text-danger">Error al cargar ventas</td></tr>';
+    }
+  }
+
+  function renderSales(orders) {
+    const tbody = document.getElementById("sales-table-body");
+    tbody.innerHTML = "";
+
+    if (orders.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay ventas</td></tr>';
+      return;
+    }
+
+    orders.forEach(order => {
+      const row = document.createElement("tr");
+      const date = new Date(order.date).toLocaleDateString('es-AR');
+      const statusText = getOrderStatus(order.status);
+      const statusClass = getStatusClass(order.status);
+
+      row.innerHTML = `
+        <td>#${order.id_key}</td>
+        <td>${order.client.name} ${order.client.lastname}</td>
+        <td>$${order.total.toFixed(2)}</td>
+        <td>${date}</td>
+        <td><span class="badge ${statusClass}">${statusText}</span></td>
+        <td>
+          <button class="btn btn-info btn-sm" onclick="viewOrderDetails(${order.id_key})">Ver detalles</button>
+        </td>
+      `;
+
+      tbody.appendChild(row);
+    });
+  }
+
+  async function loadPendingOrders() {
+    try {
+      const response = await fetch("http://localhost:8000/orders/", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) throw new Error("Error al cargar pedidos");
+
+      const orders = await response.json();
+      const pendingOrders = orders.filter(order => order.status === 1 || order.status === 2);
+
+      const ordersWithClients = [];
+      for (const order of pendingOrders) {
+        const client = await getClientWithCache(order.client_id);
+
+        let address = 'N/A';
+        if (client.addresses && client.addresses.length > 0) {
+          const addr = client.addresses[0];
+          address = `${addr.street} ${addr.number}, ${addr.city}`;
         }
 
-        alert(`Producto "${productName}" eliminado exitosamente`);
-        
-        // Recargar la lista de productos
-        location.reload();
-
-      } catch (error) {
-        console.error("Error eliminando producto:", error);
-        alert(`Error: ${error.message}`);
+        ordersWithClients.push({ ...order, client, address });
       }
+
+      renderPendingOrders(ordersWithClients);
+    } catch (error) {
+      console.error("Error cargando pedidos:", error);
+      document.getElementById("pending-orders-table-body").innerHTML =
+        '<tr><td colspan="6" class="text-center text-danger">Error al cargar pedidos</td></tr>';
+    }
+  }
+
+  function renderPendingOrders(orders) {
+    const tbody = document.getElementById("pending-orders-table-body");
+    tbody.innerHTML = "";
+
+    if (orders.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay pedidos pendientes</td></tr>';
+      return;
     }
 
-    function redirectToLogin() {
-      window.location.href = "login.html";
+    orders.forEach(order => {
+      const row = document.createElement("tr");
+      const date = new Date(order.date).toLocaleDateString('es-AR');
+      const statusText = getOrderStatus(order.status);
+      const statusClass = getStatusClass(order.status);
+
+      row.innerHTML = `
+        <td>#${order.id_key}</td>
+        <td>${order.client.name} ${order.client.lastname}</td>
+        <td>$${order.total.toFixed(2)}</td>
+        <td>${date}</td>
+        <td><span class="badge ${statusClass}">${statusText}</span></td>
+        <td>
+          <button class="btn btn-success btn-sm" onclick="markAsDelivered(${order.id_key})">Marcar como entregado</button>
+          <button class="btn btn-info btn-sm" onclick="viewOrderDetails(${order.id_key})">Ver detalles</button>
+        </td>
+      `;
+
+      tbody.appendChild(row);
+    });
+  }
+
+  function getOrderStatus(status) {
+    const statuses = {
+      1: 'Pendiente',
+      2: 'En proceso',
+      3: 'Entregado',
+      4: 'Cancelado'
+    };
+    return statuses[status] || 'Desconocido';
+  }
+
+  function getStatusClass(status) {
+    const classes = {
+      1: 'badge-warning',
+      2: 'badge-info',
+      3: 'badge-success',
+      4: 'badge-danger'
+    };
+    return classes[status] || 'badge-secondary';
+  }
+
+  function viewOrderDetails(orderId) {
+    window.location.href = `order-details.html?id=${orderId}`;
+  }
+
+  async function markAsDelivered(orderId) {
+    if (!confirm("¿Marcar este pedido como entregado?")) return;
+
+    try {
+      const getResponse = await fetch(`http://localhost:8000/orders/${orderId}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!getResponse.ok) throw new Error("Error al obtener la orden");
+
+      const currentOrder = await getResponse.json();
+
+      const updatedOrder = {
+        date: currentOrder.date,
+        total: currentOrder.total,
+        delivery_method: currentOrder.delivery_method,
+        status: 3,
+        client_id: currentOrder.client_id,
+        bill_id: currentOrder.bill_id
+      };
+
+      const updateResponse = await fetch(`http://localhost:8000/orders/${orderId}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updatedOrder)
+      });
+
+      if (!updateResponse.ok) {
+        const error = await updateResponse.json();
+        throw new Error(error.detail || "Error al actualizar");
+      }
+
+      alert("✅ Pedido marcado como entregado");
+
+      clientsCache.clear();
+
+      loadPendingOrders();
+      loadSales();
+
+    } catch (error) {
+      console.error("Error:", error);
+      alert(`❌ Error al actualizar el pedido: ${error.message}`);
+    }
+  }
+
+  function editProduct(productId) {
+    window.location.href = `edit-product.html?id=${productId}`;
+  }
+
+  async function deleteProduct(productId, productName) {
+    if (!confirm(`¿Estás seguro de eliminar "${productName}"?`)) {
+      return;
     }
 
-  </script>
+    try {
+      const response = await fetch(`http://localhost:8000/products/${productId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Error al eliminar");
+      }
+
+      alert(`Producto "${productName}" eliminado exitosamente`);
+      loadProducts();
+
+    } catch (error) {
+      console.error("Error eliminando producto:", error);
+      alert(`Error: ${error.message}`);
+    }
+  }
+
+  function redirectToLogin() {
+    window.location.href = "login.html";
+  }
+
+  document.getElementById("logout-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    sessionStorage.removeItem("access_token");
+    window.location.href = "login.html";
+  });
+
+</script>
+
 
 </body>
 </html>
