@@ -9,7 +9,6 @@ class ClientModel(BaseModel):
 
     # NO pongas 'id' aquí, ya viene de BaseModel
     name = Column(String(200), nullable=False)
-    lastname = Column(String(200), nullable=False)  # ← NUEVO CAMPO
     phone = Column(String(20))
     address = Column(String(500))
     
@@ -34,7 +33,6 @@ class ClientModel(BaseModel):
             'id': self.id,
             'user_id': self.user_id,
             'name': self.name,
-            'lastname': self.lastname,  # ← AGREGADO
             'phone': self.phone,
             'email': self.user.email if self.user else None,
         }
