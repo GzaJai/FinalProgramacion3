@@ -193,6 +193,14 @@
           },
           body: JSON.stringify(payload),
         });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || "Error en el registro");
+        }
+
+        window.location.href = "login.html";
+
       } catch (err) {
         errorSpan.textContent = err.message;
         errorSpan.hidden = false;
