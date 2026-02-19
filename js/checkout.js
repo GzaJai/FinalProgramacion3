@@ -143,7 +143,7 @@ const createBill = async (clientId, total) => {
             client_id: clientId
         };
 
-        const res = await fetch('https://finalprogramacion3-backend-production.up.railway.app/bills', {
+        const res = await fetch('https://finalprogramacion3-backend-production.up.railway.app/bills/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(billData)
