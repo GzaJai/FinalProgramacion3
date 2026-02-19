@@ -96,7 +96,7 @@ const getLoggedClient = async () => {
     try {
         console.log("Intentando obtener usuario autenticado...");
         
-        const res = await fetch('http://localhost:8000/auth/me', {
+        const res = await fetch('https://finalprogramacion3-backend-production.up.railway.app/auth/me', {
             method: 'GET',
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -143,7 +143,7 @@ const createBill = async (clientId, total) => {
             client_id: clientId
         };
 
-        const res = await fetch('http://localhost:8000/bills', {
+        const res = await fetch('https://finalprogramacion3-backend-production.up.railway.app/bills', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(billData)
@@ -166,7 +166,7 @@ const createAddress = async (addressData, clientId) => {
             client_id: clientId
         };
 
-        const res = await fetch('http://localhost:8000/addresses/', {
+        const res = await fetch('https://finalprogramacion3-backend-production.up.railway.app/addresses/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -182,7 +182,7 @@ const createAddress = async (addressData, clientId) => {
 
 const existingAddress = async (addressData, clientId) => {
     try {
-        const res = await fetch('http://localhost:8000/addresses/');
+        const res = await fetch('https://finalprogramacion3-backend-production.up.railway.app/addresses/');
         const addresses = await res.json();
 
         const existing = addresses.find(addr => 
@@ -210,7 +210,7 @@ const createOrder = async (clientId, total, billId) => {
             bill_id: billId 
         };
 
-        const res = await fetch('http://localhost:8000/orders', {
+        const res = await fetch('https://finalprogramacion3-backend-production.up.railway.app/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData)
@@ -236,7 +236,7 @@ const createOrderDetails = async (orderId, cart) => {
                 product_id: item.id
             };
 
-            return fetch('http://localhost:8000/order_details', {
+            return fetch('https://finalprogramacion3-backend-production.up.railway.app/order_details', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderDetail)

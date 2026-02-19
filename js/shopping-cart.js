@@ -18,7 +18,7 @@ const addToCart = (id) => {
     }
     const cart = getCart();
 
-    fetch(`http://localhost:8000/products/${productId}`)
+    fetch(`https://finalprogramacion3-backend-production.up.railway.app/products/${productId}`)
     .then(res => res.json())
     .then(product => {
 

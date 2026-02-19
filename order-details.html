@@ -259,7 +259,7 @@
     async function loadOrderDetails(orderId) {
       try {
         // 1. Obtener la orden
-        const orderRes = await fetch(`http://localhost:8000/orders/${orderId}`, {
+        const orderRes = await fetch(`https://finalprogramacion3-backend-production.up.railway.app/orders/${orderId}`, {
           headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
@@ -270,7 +270,7 @@
         const order = await orderRes.json();
 
         // 2. Obtener el cliente
-        const clientRes = await fetch(`http://localhost:8000/clients/${order.client_id}`, {
+        const clientRes = await fetch(`https://finalprogramacion3-backend-production.up.railway.app/clients/${order.client_id}`, {
           headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
@@ -279,7 +279,7 @@
         const client = await clientRes.json();
 
         // 3. Obtener los order_details
-        const detailsRes = await fetch(`http://localhost:8000/order_details/`, {
+        const detailsRes = await fetch(`https://finalprogramacion3-backend-production.up.railway.app/order_details/`, {
           headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
@@ -291,7 +291,7 @@
         // 4. Obtener productos de cada detail
         const detailsWithProducts = await Promise.all(
           orderDetails.map(async (detail) => {
-            const productRes = await fetch(`http://localhost:8000/products/${detail.product_id}`);
+            const productRes = await fetch(`https://finalprogramacion3-backend-production.up.railway.app/products/${detail.product_id}`);
             const product = await productRes.json();
             return { ...detail, product };
           })
@@ -448,7 +448,7 @@
     async function updateOrderStatus(orderId, newStatus) {
         try {
             // 1. Primero obtener la orden completa
-            const getResponse = await fetch(`http://localhost:8000/orders/${orderId}`, {
+            const getResponse = await fetch(`https://finalprogramacion3-backend-production.up.railway.app/orders/${orderId}`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
@@ -470,7 +470,7 @@
             };
 
             // 3. Enviar el objeto completo actualizado
-            const updateResponse = await fetch(`http://localhost:8000/orders/${orderId}`, {
+            const updateResponse = await fetch(`https://finalprogramacion3-backend-production.up.railway.app/orders/${orderId}`, {
             method: "PUT",
             headers: {
                 "Authorization": `Bearer ${token}`,

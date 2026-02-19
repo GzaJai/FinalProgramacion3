@@ -274,7 +274,7 @@
     const getProduct = async () => {
 
       try {
-        const product = await fetchWithCache(`http://localhost:8000/products/${productId}`, 5);
+        const product = await fetchWithCache(`https://finalprogramacion3-backend-production.up.railway.app/products/${productId}`, 5);
 
         document.getElementById("product-name").textContent = product.name;
         document.getElementById("product-price").textContent = "$" + product.price;
