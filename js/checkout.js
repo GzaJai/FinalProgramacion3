@@ -210,7 +210,7 @@ const createOrder = async (clientId, total, billId) => {
             bill_id: billId 
         };
 
-        const res = await fetch('https://finalprogramacion3-backend-production.up.railway.app/orders', {
+        const res = await fetch('https://finalprogramacion3-backend-production.up.railway.app/orders/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData)
@@ -236,7 +236,7 @@ const createOrderDetails = async (orderId, cart) => {
                 product_id: item.id
             };
 
-            return fetch('https://finalprogramacion3-backend-production.up.railway.app/order_details', {
+            return fetch('https://finalprogramacion3-backend-production.up.railway.app/order_details/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderDetail)
