@@ -8,7 +8,7 @@ function checkAuth() {
     return;
   }
 
-  fetch("http://localhost:8000/auth/me", {
+  fetch("https://finalprogramacion3-backend-production.up.railway.app/auth/me", {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${token}`,
