@@ -206,6 +206,9 @@
         }
 
         // ✅ LOGIN EXITOSO - Guardar token y datos del usuario
+        console.log(data);
+        console.log(data.access_token);
+        
         sessionStorage.setItem("access_token", data.access_token);
         sessionStorage.setItem("user", JSON.stringify(data.user));
 
