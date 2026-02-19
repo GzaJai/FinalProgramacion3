@@ -124,6 +124,71 @@
       font-size: 14px;
       margin-top: 10px;
     }
+
+    /* Historial de compras */
+    .orders-section {
+      background: white;
+      border-radius: 8px;
+      padding: 40px;
+      margin: 0 auto 40px auto;
+      max-width: 800px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .orders-section h3 {
+      margin-bottom: 20px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .order-card {
+      border: 1px solid #f0f0f0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .order-id {
+      font-weight: 700;
+      color: #333;
+    }
+
+    .order-date {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .order-total {
+      font-weight: 700;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .order-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .status-1 { background: #fff3cd; color: #856404; }  /* pendiente */
+    .status-2 { background: #cce5ff; color: #004085; }  /* en proceso */
+    .status-3 { background: #d4edda; color: #155724; }  /* entregado  */
+    .status-4 { background: #f8d7da; color: #721c24; }  /* cancelado  */
+
+    .orders-empty {
+      text-align: center;
+      color: #999;
+      padding: 30px 0;
+    }
   </style>
 
 </head>
@@ -232,6 +297,14 @@
 
       </div>
 
+      <!-- Historial de compras (solo para clientes) -->
+      <div class="orders-section" id="orders-section" hidden>
+        <h3><i class="fa fa-shopping-bag" style="margin-right: 10px;"></i>Mis Compras</h3>
+        <div id="orders-container">
+          <p class="orders-empty">Cargando órdenes...</p>
+        </div>
+      </div>
+
     </div>
   </section>
   <!-- end account section -->
@@ -310,6 +383,8 @@
 
   <!-- Account logic -->
   <script>
+    const API = "https://finalprogramacion3-backend-production.up.railway.app";
+
     const accountName = document.getElementById("account-name");
     const accountRole = document.getElementById("account-role");
     const accountEmail = document.getElementById("account-email");
@@ -317,21 +392,20 @@
     const adminDashboardButton = document.getElementById("admin-dashboard-button");
     const adminBadge = document.getElementById("admin-badge");
     const logoutButton = document.getElementById("logout-button");
+    const ordersSection = document.getElementById("orders-section");
+    const ordersContainer = document.getElementById("orders-container");
 
     const token = sessionStorage.getItem("access_token");
 
-    // Verificar si hay token
     if (!token) {
       window.location.href = "login.html";
     }
 
-    // Botón admin dashboard
     adminDashboardButton.addEventListener("click", () => {
       window.location.href = "admin-dashboard.html";
     });
 
-    // Obtener información del usuario
-    fetch("https://finalprogramacion3-backend-production.up.railway.app/auth/me", {
+    fetch(`${API}/auth/me`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -339,14 +413,14 @@
       }
     })
     .then(res => {
-      if (!res.ok) {
-        throw new Error("No autorizado");
-      }
+      if (!res.ok) throw new Error("No autorizado");
       return res.json();
     })
     .then(user => {
-      console.log(user);
       showUserInfo(user);
+      if (user.role === "customer" && user.client) {
+        loadOrders(user.client.id);
+      }
     })
     .catch(err => {
       console.error(err);
@@ -354,7 +428,6 @@
       window.location.href = "login.html";
     });
 
-    // Mostrar información del usuario
     function showUserInfo(user) {
       if (user.role === "admin") {
         accountName.textContent = user.email;
@@ -367,11 +440,51 @@
         accountEmail.textContent = user.client.email;
         emailItem.removeAttribute("hidden");
       }
-      
       accountRole.textContent = user.role === "admin" ? "Administrador" : "Cliente";
     }
 
-    // Botón cerrar sesión
+    function loadOrders(clientId) {
+      ordersSection.removeAttribute("hidden");
+
+      fetch(`${API}/orders/?client_id=${clientId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      })
+      .then(res => res.json())
+      .then(orders => renderOrders(orders))
+      .catch(() => {
+        ordersContainer.innerHTML = '<p class="orders-empty">Error al cargar las órdenes.</p>';
+      });
+    }
+
+    function renderOrders(orders) {
+      if (!orders || orders.length === 0) {
+        ordersContainer.innerHTML = '<p class="orders-empty">Todavía no realizaste ninguna compra.</p>';
+        return;
+      }
+
+      const statusLabels = {
+        1: "Pendiente",
+        2: "En proceso",
+        3: "Entregado",
+        4: "Cancelado"
+      };
+
+      ordersContainer.innerHTML = orders.map(order => `
+        <div class="order-card">
+          <div class="order-header">
+            <span class="order-id">Orden #${order.id_key}</span>
+            <span class="order-date">${new Date(order.date).toLocaleDateString('es-AR')}</span>
+          </div>
+          <div class="order-header">
+            <span class="order-status status-${order.status}">
+              ${statusLabels[order.status] || "Desconocido"}
+            </span>
+            <span class="order-total">$ ${order.total}</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
     logoutButton.addEventListener("click", () => {
       if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
         sessionStorage.removeItem("access_token");
