@@ -2,9 +2,13 @@ import { getCart } from './shopping-cart.js'
 
 const continueButton = document.getElementById("continue-button");
 
-continueButton.addEventListener("click", () => handleCheckout());
+continueButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    handleCheckout();
+});
 
 const handleCheckout = async () => {
+    
     const addressForm = document.getElementById("address-form");
 
     
