@@ -85,62 +85,39 @@
   <!-- contact section -->
 
   <section class="contact_section layout_padding">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form_container">
-            <div class="heading_container">
-              <h2>
-                Tus datos
-              </h2>
-            </div>
-            <form id="client-form" action="">
-              <div>
-                <input type="text" name="firstName" placeholder="Nombre " />
-              </div>
-              <div>
-                <input type="text" name="lastName" placeholder="Apellido " />
-              </div>
-              <div>
-                <input type="email" name="email" placeholder="Email" />
-              </div>
-              <div>
-                <input type="text" name="phoneNumber" placeholder="Número de teléfono" />
-              </div>
-            </form>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="form_container">
+          <div class="heading_container text-center">
+            <h2>Datos para la entrega</h2>
           </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form_container">
-            <div class="heading_container">
-              <h2>
-                Domicilio
-              </h2>
+
+          <form id="address-form">
+            <div>
+              <input type="text" name="street" placeholder="Calle" />
             </div>
-            <form id="address-form" action="">
-              <div>
-                <input type="text" name="street" placeholder="Calle " />
-              </div>
-              <div>
-                <input type="text" name="number" placeholder="Número " />
-              </div>
-              <div>
-                <input type="email" name="city" placeholder="Ciudad" />
-              </div>
-              <div>
-                <input type="text" placeholder="Anotaciones" />
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="d-flex ">
-          <button id="continue-button">
-            Continuar
-          </button>
+            <div>
+              <input type="text" name="number" placeholder="Número" />
+            </div>
+            <div>
+              <input type="text" name="city" placeholder="Ciudad" />
+            </div>
+            <div>
+              <input type="text" placeholder="Anotaciones" />
+            </div>
+
+            <div class="d-flex justify-content-center mt-3">
+              <button id="continue-button">Continuar</button>
+            </div>
+          </form>
+
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
 
   <!-- end contact section -->
 
