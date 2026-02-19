@@ -300,7 +300,7 @@
   // 👇 AGREGAR ESTA FUNCIÓN
   async function loadCategories() {
     try {
-      const response = await authenticatedFetch(`${API_URL}/categories`);
+      const response = await authenticatedFetch(`${API_URL}/categories/`);
       
       if (!response.ok) {
         throw new Error("Error cargando categorías");
